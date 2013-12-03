@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <VinaiKopp_CatalogSetup>
+            <version>0.1.0</version>
+        </VinaiKopp_CatalogSetup>
+    </modules>
+    <global>
+        <models>
+            <vinaikopp_catalogsetup>
+                <class>VinaiKopp_CatalogSetup_Model</class>
+                <resourceModel>vinaikopp_catalogsetup_resource</resourceModel>
+            </vinaikopp_catalogsetup>
+            <vinaikopp_catalogsetup_resource>
+                <class>VinaiKopp_CatalogSetup_Model_Resource</class>
+            </vinaikopp_catalogsetup_resource>
+        </models>
+    </global>
+</config>
