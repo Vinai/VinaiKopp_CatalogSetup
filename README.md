@@ -20,6 +20,7 @@ Right now the following methods are available:
 * copyAttributeSet
 * groupExistsInSet
 * addAttributeOptionsIfNotPresent
+* addProductTypeToAttributeApplyTo
 * getMaxAttributeOptionSortOrder
 
 If needed I'll add more methods as I need them.
