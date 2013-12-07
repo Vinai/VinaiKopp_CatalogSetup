@@ -2,7 +2,7 @@
 <config>
     <modules>
         <VinaiKopp_CatalogSetup>
-            <version>0.1.0</version>
+            <version>0.1.1</version>
         </VinaiKopp_CatalogSetup>
     </modules>
     <global>
