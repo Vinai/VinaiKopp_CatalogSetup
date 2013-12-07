@@ -6,7 +6,7 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
     protected $_groupsInSets = array();
     
     /**
-     * Remove all  but the super root and root categories
+     * Remove all but the super root and root categories
      */
     public function clearCategoryTable()
     {
@@ -24,7 +24,6 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
      * @param string $sourceName
      * @param string $targetName
      */
-    // @check
     public function copyAttributeSet($entityType, $sourceName, $targetName)
     {
         $sourceSet = $this->getAttributeSet($entityType, $sourceName);
@@ -62,7 +61,6 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
      * @param string $groupName
      * @return bool
      */
-    // @check
     public function groupExistsInSet($entityType, $setName, $groupName)
     {
         $key = "$entityType-$setName-$groupName";
@@ -94,7 +92,6 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
      * @param string|int $attributeCode
      * @param array $newOptionLabels
      */
-    // @check
     public function addAttributeOptionsIfNotPresent($entityType, $attributeCode, array $newOptionLabels)
     {
         $storeCode = 'admin';
@@ -128,7 +125,13 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
         }
     }
 
-    // @check
+    /**
+     * Return the maximum option sort_order for a given attribute. 
+     * 
+     * @param string $entityType
+     * @param string $attributeCode
+     * @return int
+     */
     public function getMaxAttributeOptionSortOrder($entityType, $attributeCode)
     {
         $attributeId = $this->getAttributeId($entityType, $attributeCode);
