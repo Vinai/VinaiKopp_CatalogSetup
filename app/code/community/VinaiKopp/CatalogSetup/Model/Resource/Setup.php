@@ -142,4 +142,21 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
         // Return 0 if no match
         return (int) $this->getConnection()->fetchOne($select);
     }
+
+    /**
+     * Add the product type to the attribute's apply_to property.
+     * 
+     * @param string $entityType
+     * @param string $attributeCode
+     * @param string $productType
+     */
+    public function addProductTypeToAttributeApplyTo($entityType, $attributeCode, $productType)
+    {
+        $attribute = Mage::getSingleton('eav/config')->getAttribute($entityType, $attributeCode);
+        $applyTo = $attribute->getApplyTo();
+        if (is_array($applyTo) && ! in_array($productType, $applyTo)) {
+            $applyTo[] = $productType;
+            $attribute->setApplyTo($applyTo)->save();
+        }
+    }
 } 
