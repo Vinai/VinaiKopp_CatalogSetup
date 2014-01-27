@@ -15,6 +15,13 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
         $childCount = $this->getConnection()->fetchOne("SELECT COUNT(*) FROM `$table` WHERE level > 0");
         $this->getConnection()->update($table, array('children_count' => 0), array('level=?' => 1));
         $this->getConnection()->update($table, array('children_count' => $childCount), array('level=?' => 0));
+        
+        // Remove any inconsistent records from catalog_category_product since probably
+        // FK constraints where disabled via startSetup()...
+        $rootCategories = $this->getConnection()->fetchCol("SELECT entity_id FROM `$table`");
+        $this->getConnection()->delete(
+            $this->getTable('catalog/category_product', array('category_id NOT IN(?)' => $rootCategories))
+        );
     }
 
     /**
