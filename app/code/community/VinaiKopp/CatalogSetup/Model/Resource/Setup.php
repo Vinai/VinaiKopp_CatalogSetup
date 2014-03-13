@@ -151,6 +151,42 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
     }
 
     /**
+     * Change an attribute option label from one value to another
+     * 
+     * @param string $entityType     Entity Type
+     * @param string $attributeCode  Attribute Code
+     * @param string $from           Old value
+     * @param string $to             New value
+     * @param int $storeId           Limit update to the specified store
+     * @return int                   The number of affected rows.
+     * @throws Mage_Core_Exception   Attribute not known
+     * @throws Mage_Core_Model_Store_Exception
+     */
+    public function updateAttributeOptionLabel($entityType, $attributeCode, $from, $to, $storeId = null)
+    {
+        $attributeId = $this->getAttributeId($entityType, $attributeCode);
+        if (! $attributeId) {
+            Mage::throwException("EAV Attribute '$entityType' :: '$attributeCode' not found.");
+        }
+        $select = $this->getConnection()->select()
+            ->from($this->getTable('eav/attribute_option'), 'option_id')
+            ->where("attribute_id=?", $attributeId);
+        $optionIds = $this->getConnection()->fetchCol($select);
+        if ($optionIds) {
+            $table = $this->getTable('eav/attribute_option_value');
+            $where = array(
+                'option_id IN(?)' => $optionIds,
+                'value = ?' => $from
+            );
+            if (! is_numeric($storeId)) {
+                $storeId = Mage::app()->getStore($storeId)->getId();
+                $where['store_id = ?'] = $storeId;
+            }
+            return $this->getConnection()->update($table, array('value' => $to), $where);
+        }
+    }
+
+    /**
      * Add the product type to the attribute's apply_to property.
      * 
      * @param string $entityType
