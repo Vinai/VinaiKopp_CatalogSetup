@@ -8,6 +8,10 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
     /**
      * Remove all but the super root and root categories
      * 
+     * WARNING: only use in setup context, that is after startSetup() was 
+     * called! This method leaves the execution context in setup mode regardless
+     * if it was set beforehand!
+     * 
      * @param int $level
      */
     public function clearCategoryTable($level = 1)
