@@ -7,21 +7,29 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
     
     /**
      * Remove all but the super root and root categories
+     * 
+     * @param int $level
      */
-    public function clearCategoryTable()
+    public function clearCategoryTable($level = 1)
     {
+        // disable setup mode so foreign key constraints cascade delete
+        $this->endSetup();
         $table = $this->getTable('catalog/category');
-        $this->getConnection()->delete($table, array('level>?' => 1));
+        $level = max(1, $level);
+        $this->getConnection()->delete($table, array('level>?' => $level));
         $childCount = $this->getConnection()->fetchOne("SELECT COUNT(*) FROM `$table` WHERE level > 0");
         $this->getConnection()->update($table, array('children_count' => 0), array('level=?' => 1));
         $this->getConnection()->update($table, array('children_count' => $childCount), array('level=?' => 0));
         
         // Remove any inconsistent records from catalog_category_product since probably
         // FK constraints where disabled via startSetup()...
-        $rootCategories = $this->getConnection()->fetchCol("SELECT entity_id FROM `$table`");
-        $this->getConnection()->delete(
-            $this->getTable('catalog/category_product', array('category_id NOT IN(?)' => $rootCategories))
-        );
+        //$rootCategories = $this->getConnection()->fetchCol("SELECT entity_id FROM `$table`");
+        //$this->getConnection()->delete(
+        //    $this->getTable('catalog/category_product', array('category_id NOT IN(?)' => $rootCategories))
+        //);
+        
+        // re-disable foreign key constraints 
+        $this->startSetup();
     }
 
     /**
