@@ -22,6 +22,8 @@ Right now the following methods are available:
 * addAttributeOptionsIfNotPresent
 * addProductTypeToAttributeApplyTo
 * getMaxAttributeOptionSortOrder
+* addAttributeStoreLabelsByStore
+* addAttributeStoreLabelsByLocale
 
 If needed I'll add more methods as I need them.
 
