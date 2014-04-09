@@ -273,18 +273,20 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
                 $condition = array('attribute_id = ?', $attribute['attribute_id']);
                 $this->getConnection()->delete($this->getTable('eav/attribute_label'), $condition);
 
+                $data = array();
                 foreach ($storeLabels as $storeId => $label) {
                     if (!$storeId || !strlen($label)) {
                         continue;
                     }
-                    $this->getConnection()->insert(
-                        $this->getTable('eav/attribute_label'),
-                        array('attribute_id' => $attribute['attribute_id'],
-                            'store_id' => $storeId,
-                            'value' => $label
-                        )
+                    $data[] = array(
+                        'attribute_id' => $attribute['attribute_id'],
+                        'store_id' => $storeId,
+                        'value' => $label
                     );
                 }
+                $this->getConnection()->insertMultiple(
+                    $this->getTable('eav/attribute_label'), $data
+                );
             } else {
                 throw Mage::exception('Mage_Eav', (Mage::helper('eav')->__('Attribute ID is missing!')));
             }
