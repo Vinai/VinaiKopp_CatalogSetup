@@ -214,4 +214,110 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
             $attribute->setApplyTo($applyTo)->save();
         }
     }
+    
+    /**
+     * Prepare the labels defined for each store
+     * return array (
+     *  'attribute_id' => ID,
+     *  'labels' => array('STORE_ID' => VALUE)
+     * )
+     *
+     * @param array $labels
+     * @param int $id
+     * @param string $type
+     * @return array $attribute
+     */
+    public function prepareLabels ($labels, $id, $type = 'store')
+    {
+        $attribute = array();
+        $attribute['attribute_id'] = $id;
+
+        $storeSelect = $this->getConnection()->select()
+            ->from ($this->getTable('core_store'), array('store_id'))
+            ->order('(store_id + 0)');
+
+        $stores = $this->getConnection()->fetchAll($storeSelect);
+        foreach ($stores as $store){
+            if ($type == 'store') {
+                $attribute['labels'][$store['store_id']] = $labels[$store['store_id']];
+            } else {
+                $config = $this->getConnection()->select()
+                    ->from ($this->getTable('core_config_data'), array('value'))
+                    ->where('scope = "stores" AND scope_id = ' . $store['store_id'] . ' AND path = "general/locale/code"' );
+
+                $locale = $this->getConnection()->fetchRow($config);
+                if($locale && array_key_exists($locale['value'], $labels)){
+                    $attribute['labels'][$store['store_id']] = $labels[$locale['value']];
+                }
+            }
+        }
+        return $attribute;
+    }
+
+    /**
+     * Add the label to an attribute for each store if it exists
+     * Delete the previous labels before to save the new one
+     * $attribute must be prepared by the method prepareLabels()
+     * 
+     * @param array $attribute
+     * @return Rissip_Course_Model_Entity_Setup $this
+     * @throws Exception
+     */
+    public function addStoreLabels ($attribute = array())
+    {
+        $storeLabels = $attribute['labels'];
+        if (is_array($storeLabels)) {
+            if (isset($attribute['attribute_id'])) {
+                $condition = $this->getConnection()->quoteInto('attribute_id = ?', $attribute['attribute_id']);
+                $this->getConnection()->delete($this->getTable('eav/attribute_label'), $condition);
+
+                foreach ($storeLabels as $storeId => $label) {
+                    if (!$storeId || !strlen($label)) {
+                        continue;
+                    }
+                    $this->getConnection()->insert(
+                        $this->getTable('eav/attribute_label'),
+                        array('attribute_id' => $attribute['attribute_id'],
+                                'store_id' => $storeId,
+                                'value' => $label
+                        )
+                    );
+                }
+            } else {
+                throw Mage::exception('Mage_Eav', (Mage::helper('eav')->__('Attribute ID is missing!')));
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Set the label text of an attribute for each store
+     * $labels = array('STORE_ID' => VALUE)
+     *
+     * @param int|string $entityType
+     * @param int|string $attribute
+     * @param array $labels
+     * @return $this
+     */
+    public function addAttributeStoreLabelsByStore($entityType, $attribute, $labels)
+    {
+        $this->addStoreLabels($this->prepareLabels($labels, $this->getAttributeId($entityType, $attribute)));
+        return $this;
+    }
+
+    /**
+     * Set the label text of an attribute for each store via locale key
+     * $labels = array('LOCALE' => VALUE)
+     * e.g. LOCALE = de_DE or fr_FR
+     *
+     * @param int|string $entityType
+     * @param int|string $attribute
+     * @param array $labels
+     * @return $this
+     */
+    public function addAttributeStoreLabelsByLocale($entityType, $attribute, $labels)
+    {
+        $this->addStoreLabels($this->prepareLabels($labels, $this->getAttributeId($entityType, $attribute), 'locale'));
+        return $this;
+    }
 } 
