@@ -262,8 +262,8 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
      * $attribute must be prepared by the method prepareLabels()
      *
      * @param array $attribute
-     * @return Rissip_Course_Model_Entity_Setup $this
-     * @throws Exception
+     * @return $this
+     * @throws Mage_Core_Exception
      */
     public function addStoreLabels($attribute = array())
     {
