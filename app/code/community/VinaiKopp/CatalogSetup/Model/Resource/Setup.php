@@ -265,7 +265,7 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
      * @return $this
      * @throws Mage_Core_Exception
      */
-    public function addStoreLabels($attribute = array())
+    protected function _addStoreLabels($attribute = array())
     {
         $storeLabels = $attribute['labels'];
         if (is_array($storeLabels)) {
