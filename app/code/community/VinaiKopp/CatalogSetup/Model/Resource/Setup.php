@@ -4,14 +4,14 @@
 class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Resource_Setup
 {
     protected $_groupsInSets = array();
-    
+
     /**
      * Remove all but the super root and root categories
-     * 
-     * WARNING: only use in setup context, that is after startSetup() was 
+     *
+     * WARNING: only use in setup context, that is after startSetup() was
      * called! This method leaves the execution context in setup mode regardless
      * if it was set beforehand!
-     * 
+     *
      * @param int $level
      */
     public function clearCategoryTable($level = 1)
@@ -24,14 +24,14 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
         $childCount = $this->getConnection()->fetchOne("SELECT COUNT(*) FROM `$table` WHERE level > 0");
         $this->getConnection()->update($table, array('children_count' => 0), array('level=?' => 1));
         $this->getConnection()->update($table, array('children_count' => $childCount), array('level=?' => 0));
-        
+
         // Remove any inconsistent records from catalog_category_product since probably
         // FK constraints where disabled via startSetup()...
         //$rootCategories = $this->getConnection()->fetchCol("SELECT entity_id FROM `$table`");
         //$this->getConnection()->delete(
         //    $this->getTable('catalog/category_product', array('category_id NOT IN(?)' => $rootCategories))
         //);
-        
+
         // re-disable foreign key constraints 
         $this->startSetup();
     }
@@ -46,7 +46,7 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
     public function copyAttributeSet($entityType, $sourceName, $targetName)
     {
         $sourceSet = $this->getAttributeSet($entityType, $sourceName);
-        if (! $sourceSet) {
+        if (!$sourceSet) {
             Mage::throwException("Unable to load source attribute set '$sourceName");
         }
         $select = $this->getConnection()->select()
@@ -61,7 +61,7 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
                 $entityType, $row['attribute_set_id'], $row['attribute_group_id']
             );
             $groupName = $group['attribute_group_name'];
-            if (! $this->groupExistsInSet($entityType, $targetName, $groupName)) {
+            if (!$this->groupExistsInSet($entityType, $targetName, $groupName)) {
                 $this->addAttributeGroup(
                     $entityType, $targetName, $groupName, $group['sort_order']
                 );
@@ -74,7 +74,7 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
 
     /**
      * Check if the specified attribute set contains a given group
-     * 
+     *
      * @param string $entityType
      * @param string $setName
      * @param string $groupName
@@ -87,7 +87,7 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
             return $this->_groupsInSets[$key];
         }
         $groupId = $this->getAttributeGroup($entityType, $setName, $groupName, 'attribute_group_id');
-        $exists = (bool) $groupId;
+        $exists = (bool)$groupId;
         if ($exists) {
             // Only cache positive results
             $this->_groupsInSets[$key] = $exists;
@@ -97,7 +97,7 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
 
     /**
      * Add attribute options if they don't already exist
-     * 
+     *
      * Format of $newOptionLabels:
      * array(
      *    array(0 => 'Label', 1 => 'Label),
@@ -120,11 +120,11 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
         $source = $attribute->setStoreId($store->getId())->getSource();
         $toCreate = array();
         foreach ($newOptionLabels as $option) {
-            if (! isset($option[$storeId])) {
+            if (!isset($option[$storeId])) {
                 Mage::throwException('No default option label specified for store ' . $storeId);
             }
             $label = $option[$storeId];
-            if (! $source->getOptionId($label) && ! isset($toCreate[$label])) {
+            if (!$source->getOptionId($label) && !isset($toCreate[$label])) {
                 $toCreate[$label] = $option;
             }
         }
@@ -145,8 +145,8 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
     }
 
     /**
-     * Return the maximum option sort_order for a given attribute. 
-     * 
+     * Return the maximum option sort_order for a given attribute.
+     *
      * @param string $entityType
      * @param string $attributeCode
      * @return int
@@ -159,17 +159,17 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
             ->where("attribute_id=?", $attributeId);
 
         // Return 0 if no match
-        return (int) $this->getConnection()->fetchOne($select);
+        return (int)$this->getConnection()->fetchOne($select);
     }
 
     /**
      * Change an attribute option label from one value to another
-     * 
-     * @param string $entityType     Entity Type
-     * @param string $attributeCode  Attribute Code
-     * @param string $from           Old value
-     * @param string $to             New value
-     * @param int $storeId           Limit update to the specified store
+     *
+     * @param string $entityType Entity Type
+     * @param string $attributeCode Attribute Code
+     * @param string $from Old value
+     * @param string $to New value
+     * @param int $storeId Limit update to the specified store
      * @return int                   The number of affected rows.
      * @throws Mage_Core_Exception   Attribute not known
      * @throws Mage_Core_Model_Store_Exception
@@ -177,7 +177,7 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
     public function updateAttributeOptionLabel($entityType, $attributeCode, $from, $to, $storeId = null)
     {
         $attributeId = $this->getAttributeId($entityType, $attributeCode);
-        if (! $attributeId) {
+        if (!$attributeId) {
             Mage::throwException("EAV Attribute '$entityType' :: '$attributeCode' not found.");
         }
         $select = $this->getConnection()->select()
@@ -190,7 +190,7 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
                 'option_id IN(?)' => $optionIds,
                 'value = ?' => $from
             );
-            if (! is_numeric($storeId)) {
+            if (!is_numeric($storeId)) {
                 $storeId = Mage::app()->getStore($storeId)->getId();
                 $where['store_id = ?'] = $storeId;
             }
@@ -200,7 +200,7 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
 
     /**
      * Add the product type to the attribute's apply_to property.
-     * 
+     *
      * @param string $entityType
      * @param string $attributeCode
      * @param string $productType
@@ -209,12 +209,12 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
     {
         $attribute = Mage::getSingleton('eav/config')->getAttribute($entityType, $attributeCode);
         $applyTo = $attribute->getApplyTo();
-        if (is_array($applyTo) && ! in_array($productType, $applyTo)) {
+        if (is_array($applyTo) && !in_array($productType, $applyTo)) {
             $applyTo[] = $productType;
             $attribute->setApplyTo($applyTo)->save();
         }
     }
-    
+
     /**
      * Prepare the labels defined for each store
      * return array (
@@ -227,26 +227,26 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
      * @param string $type
      * @return array $attribute
      */
-    public function prepareLabels ($labels, $id, $type = 'store')
+    public function prepareLabels($labels, $id, $type = 'store')
     {
         $attribute = array();
         $attribute['attribute_id'] = $id;
 
         $storeSelect = $this->getConnection()->select()
-            ->from ($this->getTable('core_store'), array('store_id'))
+            ->from($this->getTable('core_store'), array('store_id'))
             ->order('(store_id + 0)');
 
         $stores = $this->getConnection()->fetchAll($storeSelect);
-        foreach ($stores as $store){
+        foreach ($stores as $store) {
             if ($type == 'store') {
                 $attribute['labels'][$store['store_id']] = $labels[$store['store_id']];
             } else {
                 $config = $this->getConnection()->select()
-                    ->from ($this->getTable('core_config_data'), array('value'))
-                    ->where('scope = "stores" AND scope_id = ' . $store['store_id'] . ' AND path = "general/locale/code"' );
+                    ->from($this->getTable('core_config_data'), array('value'))
+                    ->where('scope = "stores" AND scope_id = ' . $store['store_id'] . ' AND path = "general/locale/code"');
 
                 $locale = $this->getConnection()->fetchRow($config);
-                if($locale && array_key_exists($locale['value'], $labels)){
+                if ($locale && array_key_exists($locale['value'], $labels)) {
                     $attribute['labels'][$store['store_id']] = $labels[$locale['value']];
                 }
             }
@@ -258,12 +258,12 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
      * Add the label to an attribute for each store if it exists
      * Delete the previous labels before to save the new one
      * $attribute must be prepared by the method prepareLabels()
-     * 
+     *
      * @param array $attribute
      * @return Rissip_Course_Model_Entity_Setup $this
      * @throws Exception
      */
-    public function addStoreLabels ($attribute = array())
+    public function addStoreLabels($attribute = array())
     {
         $storeLabels = $attribute['labels'];
         if (is_array($storeLabels)) {
@@ -278,8 +278,8 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
                     $this->getConnection()->insert(
                         $this->getTable('eav/attribute_label'),
                         array('attribute_id' => $attribute['attribute_id'],
-                                'store_id' => $storeId,
-                                'value' => $label
+                            'store_id' => $storeId,
+                            'value' => $label
                         )
                     );
                 }
