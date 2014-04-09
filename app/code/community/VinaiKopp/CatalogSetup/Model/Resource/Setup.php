@@ -229,7 +229,7 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
      * @param string $type
      * @return array $attribute
      */
-    public function prepareLabels($labels, $id, $type = 'store')
+    protected function _prepareLabels($labels, $id, $type = 'store')
     {
         $attribute = array();
         $attribute['attribute_id'] = $id;
@@ -303,7 +303,9 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
      */
     public function addAttributeStoreLabelsByStore($entityType, $attribute, $labels)
     {
-        $this->addStoreLabels($this->prepareLabels($labels, $this->getAttributeId($entityType, $attribute)));
+        $attributeId = $this->getAttributeId($entityType, $attribute);
+        $labels = $this->_prepareLabels($labels, $attributeId);
+        $this->_addStoreLabels($labels);
         return $this;
     }
 
@@ -319,7 +321,9 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
      */
     public function addAttributeStoreLabelsByLocale($entityType, $attribute, $labels)
     {
-        $this->addStoreLabels($this->prepareLabels($labels, $this->getAttributeId($entityType, $attribute), 'locale'));
+        $attributeId = $this->getAttributeId($entityType, $attribute);
+        $labels = $this->_prepareLabels($labels, $attributeId, 'locale');
+        $this->_addStoreLabels($labels);
         return $this;
     }
 } 
