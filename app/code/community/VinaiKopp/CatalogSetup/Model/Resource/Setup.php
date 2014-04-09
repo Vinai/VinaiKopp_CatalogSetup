@@ -184,6 +184,7 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
             ->from($this->getTable('eav/attribute_option'), 'option_id')
             ->where("attribute_id=?", $attributeId);
         $optionIds = $this->getConnection()->fetchCol($select);
+        $numAffected = 0;
         if ($optionIds) {
             $table = $this->getTable('eav/attribute_option_value');
             $where = array(
@@ -194,8 +195,9 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
                 $storeId = Mage::app()->getStore($storeId)->getId();
                 $where['store_id = ?'] = $storeId;
             }
-            return $this->getConnection()->update($table, array('value' => $to), $where);
+            $numAffected = $this->getConnection()->update($table, array('value' => $to), $where);
         }
+        return $numAffected;
     }
 
     /**
