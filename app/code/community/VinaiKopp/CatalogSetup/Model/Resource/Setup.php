@@ -131,8 +131,9 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
         if ($toCreate) {
             $maxOptionSortOrder = $this->getMaxAttributeOptionSortOrder($entityType, $attributeCode);
             $order = $value = array();
+            $n = 0;
             foreach ($toCreate as $option) {
-                $idx = 'a' . count($order); // unique index that results in 0 when cast to int
+                $idx = 'a' . ($n++); // unique index that results in 0 when cast to int
                 $order[$idx] = ++$maxOptionSortOrder;
                 $value[$idx] = $option;
             }
