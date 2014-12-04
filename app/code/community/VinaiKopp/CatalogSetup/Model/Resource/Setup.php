@@ -271,7 +271,7 @@ class VinaiKopp_CatalogSetup_Model_Resource_Setup extends Mage_Catalog_Model_Res
         $storeLabels = $attribute['labels'];
         if (is_array($storeLabels)) {
             if (isset($attribute['attribute_id'])) {
-                $condition = array('attribute_id = (?)' => $attribute['attribute_id']);
+                $condition = array('attribute_id = ?' => $attribute['attribute_id']);
                 $this->getConnection()->delete($this->getTable('eav/attribute_label'), $condition);
 
                 $data = array();
