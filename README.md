@@ -1,3 +1,7 @@
+# This Magento 1 extension is orphaned, unsupported and no longer maintained.
+
+If you use it, you are effectively adopting the code for your own project.
+
 Extended Catalog EAV Setup Class 
 ================
 This extension contains an extended catalog setup class with additional methods Magento developers might find useful.
